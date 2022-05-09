@@ -18,6 +18,10 @@ export class VertexArray {
   
       this.unbind();
     }
+
+    setAttributeDivisor(index, divisor) {
+      gl.vertexAttribDivisor(index, divisor)
+    }
   
     bind() {
       gl.bindVertexArray(this.vertexArray);
@@ -40,6 +44,10 @@ export class VertexArray {
     drawIndexed(mode) {
       // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.attributes.indexBuffer);
       gl.drawElements(mode, this.attributes.indexCount, gl.UNSIGNED_INT, 0);
+    }
+
+    drawIndexedInstanced(mode, count) {
+      gl.drawElementsInstanced(mode, this.attributes.indexCount, gl.UNSIGNED_INT, 0, count)
     }
   }
   

@@ -7,6 +7,8 @@ let attributes;
 let shaderProgram;
 let vao;
 
+let num;
+
 let degrees = 1;
 
 function render() {
@@ -16,9 +18,10 @@ function render() {
 
   shaderProgram.bind();
   vao.bind();
+  vao.setAttributeDivisor(1, 1);
   degrees = degrees * Math.PI / 180;
   shaderProgram.setUniform1f('radians', degrees);
-  vao.drawSequence(gl.TRIANGLES);
+  vao.drawIndexedInstanced(gl.TRIANGLES, num);
   vao.unbind();
   shaderProgram.unbind();
 }
@@ -35,34 +38,53 @@ async function initialize() {
 
   const positions = [
     0, 0, 0,
-    0.5, 0, 0,
-    0.5, 0.5, 0,
+    0.01, 0, 0,
+    0.01, 0.01, 0,
   ];
 
+  const indices = [
+    0, 1, 2,
+  ]
+
+  const offsets = []
+  num = 150000
+  for (let i = 0; i < num; i++) {
+    const ran_x = Math.random()*2 - 1
+    const ran_y = Math.random()*2 - 1
+    offsets.push(ran_x, ran_y)
+  }
+
   attributes = new VertexAttributes();
-  attributes.addAttribute('position', 3, 3, positions);
+  attributes.addAttribute('position', positions.length / 3, 3, positions);
+  attributes.addAttribute('offset', positions.length / 3, 2, offsets)
+  attributes.addIndices(indices)
 
   const vertexSource = `
 uniform float radians;
 in vec3 position;
+in vec2 offset;
+
+out vec3 mixColor;
 
 void main() {
   gl_PointSize = 10.0;
   gl_Position = vec4(
-    position.x * cos(radians) - position.y * sin(radians),
-    position.x * sin(radians) + position.y * cos(radians),
-    position.z,
-    1.0
-  );
+    position.x * cos(radians) - position.y * sin(radians) + offset.x,
+    position.x * sin(radians) + position.y * cos(radians) + offset.y,
+    position.z, 1.0);
+    
+    mixColor = vec3(position.x + offset.x, 
+    position.y + offset.y, sin(offset.x));
 }
   `;
 
   const fragmentSource = `
 out vec4 fragmentColor;
-uniform vec3 color;
+
+in vec3 mixColor;
 
 void main() {
-  fragmentColor = vec4(color, 1.0);
+  fragmentColor = vec4(mixColor, 1.0);
 }
   `;
 
@@ -72,30 +94,14 @@ void main() {
   // Event listeners
   window.addEventListener('resize', onResizeWindow);
   onResizeWindow();
-
-  // animateFrame();
-  
+  animateFrame()
 }
 
-// function animateFrame() {
-//   degrees = performance.now() * 0.1;
-//   render();
-//   requestAnimationFrame(animateFrame);
-// }
-
-function setColor(r, g, b) {
-  shaderProgram.bind();
-  shaderProgram.setUniform3f('color', r, g, b);
-  shaderProgram.unbind();
+function animateFrame() {
+  degrees = performance.now() * 0.1;
   render();
+  requestAnimationFrame(animateFrame);
 }
 
-function onMouseMove(event) {
-  degrees = event.clientX;
-  render();
-}
-
-window.setColor = setColor;
-
-window.addEventListener('mousemove', onMouseMove);
+// window.addEventListener('mousemove', onMouseMove);
 window.addEventListener('load', initialize);

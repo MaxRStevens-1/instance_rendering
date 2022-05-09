@@ -19,6 +19,8 @@ export class VertexAttribute {
     destroy() {
       gl.deleteBuffer(this.buffer);
     }
+
+
   }
   
   export class VertexAttributes {
