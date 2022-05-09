@@ -131,6 +131,9 @@ export class Vector3 {
     return this.x * other.x + this.y * other.y + this.z * other.z
   }
   get(index) {
+    if (index > 2) {
+      return 1
+    }
     return this.coordinates[index]
   }
   sub(that) {

@@ -7,10 +7,11 @@ export async function readOBJFile(file) {
 }
 
 export class Trimesh {
-  constructor(positions, normals, indices) {
+  constructor(positions, normals, indices, texPositions) {
     this.positions = positions
     this.normals = normals
     this.indices = indices
+    this.texPositions = texPositions
     
     this.min = null
     this.max = null
@@ -27,6 +28,10 @@ export class Trimesh {
 
   flat_indices() {
     return this.indices.flatMap((index) => [index.x, index.y, index.z])
+  }
+
+  flat_tex() {
+    return this.texPositions.flatMap((texPos) => [texPos.x, texPos.y])
   }
 
   static flat_to_vec(flat_array) {
@@ -69,6 +74,7 @@ export class Trimesh {
     const tmpPositions = []
     const tmpNormals = []
     const tmpIndices = []
+    const textCoords = []
   
     // parse lines of OBJ and append to tmp lists
     for (let line of lines) 
@@ -102,7 +108,7 @@ export class Trimesh {
     let {positions, normals, indices} = 
           this.buildArrays(tmpPositions, tmpNormals, tmpIndices);    
 
-    trimesh = new Trimesh(positions, normals, indices)
+    trimesh = new Trimesh(positions, normals, indices, textCoords)
     if (normals.length == 0) {
       trimesh.generateNormals()
     }
@@ -123,7 +129,6 @@ export class Trimesh {
     
     for (let triangle of tmpIndices) 
     {
-      // console.log(triangle)
       let indexArray = []
       for (let slashToken of triangle)
       {
@@ -149,7 +154,6 @@ export class Trimesh {
       }
       indices.push(new Vector3(indexArray[0], indexArray[1], indexArray[2]))
     }
-    console.log(indices)
     return {positions, normals, indices}
   }
 
@@ -194,8 +198,8 @@ export class Trimesh {
   }
 }
 export class TrimeshVao extends Trimesh {
-  constructor(positions, normals, indices, vao) {
-    super (positions, normals, indices)
+  constructor(positions, normals, indices, vao, texPositions) {
+    super (positions, normals, indices, texPositions)
     this.vao = vao
   }
 }

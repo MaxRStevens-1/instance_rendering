@@ -1,6 +1,7 @@
 import { Matrix4 } from './matrix'
 import { Vector3, Vector4 } from './vector'
 import {Terrain} from './terrain'
+
 export class Camera {
   constructor(from, to, worldUp) {
     this.position = from
@@ -13,8 +14,6 @@ export class Camera {
     this.reorient();
   }
 
-  
-
   strafe(distance) {
     this.position = this.position.add(this.right.scalarMultiply(distance))
     this.reorient()
@@ -25,6 +24,7 @@ export class Camera {
     this.reorient()
   }
 
+  elevate(distance) {}
 
   yaw(degrees) {
     const forwardVec4 = new Vector4()
@@ -47,6 +47,7 @@ export class Camera {
       this.forward = new Vector3(pitchVec4.get(0), pitchVec4.get(1), pitchVec4.get(2));
       // this.forward.y = this.clamp(this.forward.y, -0.8, 0.8)
       this.forward = this.forward.normalize()
+      // console.log(forwardVec4 + " " + pitchVec4 + " " + this.forward)
       this.degrees += degrees
       this.reorient()
     }
@@ -81,17 +82,21 @@ export class Camera {
     rotaterMatrix.set(3, 2, 0)
     rotaterMatrix.set(3, 3, 1)
 
+    // console.log(this.forward.magnitude)
+    // console.log(this.right.magnitude)
+    // console.log(up.magnitude)
 
     this.eyeFromWorld = rotaterMatrix.multiplyMatrix(translater)
   }
 }
+
 export class TerrianCamera extends Camera {
   constructor (from, to, worldUp, terrain, eyeLevel) {
     super (from, to, worldUp);
     this.terrain = terrain;
     this.eyeLevel = eyeLevel;
-    this.buoy()
-    this.reorient()
+    this.buoy
+    this.reorient
   }
 
 
@@ -101,14 +106,11 @@ export class TerrianCamera extends Camera {
     let terrainMaxZ = this.terrain.depth
     this.position.x = this.clamp (this.position.x, 0, terrainMaxX)
     this.position.z = this.clamp (this.position.z, 0, terrainMaxZ)
+    //console.log (terrian.get ())
     this.position.y = this.terrain.blerp (this.position.x, this.position.z) + this.eyeLevel;
+    // console.log (this.position)
   } 
 
-  elevate(distance) {
-    this.eyeLevel = this.eyeLevel + distance
-    this.buoy()
-    this.reorient()
-  }
 
   strafe(distance) {
     this.position = this.position.add(this.right.scalarMultiply(distance))

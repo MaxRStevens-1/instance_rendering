@@ -20,12 +20,14 @@ export class Terrain {
 
     toTrimesh() {
         const positions = [];
+        const texPositions = [];
 
         for (let z = 0; z < this.depth; z++) {
             for (let x = 0; x < this.width; x++) {
                 let y = this.get(x, z)
-                let vec3 = new Vector3(x, y * 0.1, z)
+                let vec3 = new Vector3(x, y, z)
                 positions.push(vec3)
+                texPositions.push(new Vector3(z / this.depth, x / this.width, 0))
             }
         }
 
@@ -45,7 +47,7 @@ export class Terrain {
             }
         }
 
-        const trimesh = new Trimesh(positions, [], faces)
+        const trimesh = new Trimesh(positions, [], faces, texPositions)
         return trimesh
     }
 

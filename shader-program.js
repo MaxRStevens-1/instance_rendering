@@ -66,7 +66,6 @@ export class ShaderProgram {
 
   assertUniform(name) {
     if (!this.uniforms.hasOwnProperty(name)) {
-      console.log (this.uniforms)
       console.error(`${name} isn't a valid uniform.`);
     }
   }

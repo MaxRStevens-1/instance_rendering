@@ -5,6 +5,14 @@ import { Vector3, Vector4 } from './vector'
 import { Camera, TerrianCamera } from './camera'
 
 
+export function createTexture2d(image, textureUnit = gl.TEXTURE0) {
+  gl.activeTexture(textureUnit)
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image)
+  gl.generateMipmap(gl.TEXTURE_2D)
+  return texture
+}
 
 export function getTextFromWorld (lightPosition, lightTarget) {
     const lightCamera = Camera.lookAt(lightPosition, lightTarget, new Vector3(0, 1, 0));
