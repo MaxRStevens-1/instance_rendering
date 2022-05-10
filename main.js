@@ -7,10 +7,10 @@ let attributes;
 let shaderProgram;
 let vao;
 
-let num = 30000;
+let num = 5;
 
 let degrees = 1;
-
+let scale = 1;
 let offsets;
 let doInstance = true;
 
@@ -24,7 +24,7 @@ function render() {
   vao.bind();
   degrees = degrees * Math.PI / 180;
   shaderProgram.setUniform1f('radians', degrees);
-  // for (let i = 0; i < num; i++)
+  // for (let i = 0; i < num; i++) {
   for (let i = 0; i < num; i+=2) {
     shaderProgram.setUniform2f('offset', offsets[i], offsets[i+1])
     vao.drawIndexed(gl.TRIANGLES);  
@@ -40,8 +40,8 @@ function render() {
     shaderProgram.bind();
     vao.bind();
     
-    //vao.setAttributeDivisor (1,1)
-    vao.setAttributeDivisor(1, 1);
+    vao.setAttributeDivisor (1,2)
+    //vao.setAttributeDivisor(1, 1);
     degrees = degrees * Math.PI / 180;
     shaderProgram.setUniform1f('radians', degrees);
     vao.drawIndexedInstanced(gl.TRIANGLES, num);
@@ -71,8 +71,8 @@ async function initNoInstance () {
 
   const positions = [
     0, 0, 0,
-    0.01, 0, 0,
-    0.01, 0.01, 0,
+    1/scale, 0, 0,
+    1/scale, 1/scale, 0,
   ];
 
   const indices = [
@@ -133,8 +133,8 @@ async function initInstance () {
 
   const positions = [
     0, 0, 0,
-    0.01, 0, 0,
-    0.01, 0.01, 0,
+    1/scale, 0, 0,
+    1/scale, 1/scale, 0,
   ];
 
   const indices = [
